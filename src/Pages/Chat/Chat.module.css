@@ -1,0 +1,104 @@
+/* ====== 중앙 섹션: 채팅 메인 ====== */
+.chatsection {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+}
+
+/* 채팅방 헤더(상단) */
+.chatheader {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.chatheaderimg {
+    width: 50px;
+    height: 50px;
+    background-color: #e0e0e0;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 1rem;
+    font-size: 0.8rem;
+}
+
+.chatheadercontent {
+    display: flex;
+    flex-direction: column;
+}
+
+.chatheadercontentname {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.chatheadercontentstatus {
+    font-size: 0.85rem;
+    color: #28a745;
+}
+
+/* 채팅 메시지 영역 */
+.chat {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto; /* 메시지가 많아지면 스크롤 */
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* 예시: 받은 메시지, 보낸 메시지 레이아웃 */
+.chatsender {
+    align-self: flex-start;
+    max-width: 70%;
+    background-color: #e9ecef;
+    padding: 0.5rem 1rem;
+    border-radius: 15px;
+}
+
+.chatwriter {
+    align-self: flex-end;
+    max-width: 70%;
+    background-color: #007bff;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 15px;
+}
+
+/* 채팅 입력 영역 */
+.chatinput {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem 1rem;
+    border-top: 1px solid #e0e0e0;
+    background-color: #fff;
+}
+
+.chatinput input[type="file"] {
+    margin-right: 0.5rem;
+}
+
+.chatinput input[type="text"] {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-right: 0.5rem;
+}
+
+.chatinput button {
+    padding: 0.5rem 1rem;
+    background-color: #27ae60;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.chatinput button:hover {
+    background-color: #219150;
+}

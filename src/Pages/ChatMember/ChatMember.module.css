@@ -1,0 +1,96 @@
+/* ====== 오른쪽 섹션: 참여자/파일 목록 ====== */
+.chatmembersection {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border-left: 1px solid #e0e0e0;
+    overflow-y: auto;
+}
+
+/* 참여자 목록 */
+.chatmembers {
+    padding: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.chatmembersheader {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.chatmemberlist {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.chatmemberimg {
+    width: 40px;
+    height: 40px;
+    background-color: #e0e0e0;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 0.6rem;
+    font-size: 0.8rem;
+}
+
+.chatmembercontent {
+    display: flex;
+    flex-direction: column;
+}
+
+.chatmembername {
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-bottom: 0.2rem;
+}
+
+.chatmemberdesc {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+/* 파일 목록 */
+.chatmemberfiles {
+    padding: 1rem;
+}
+
+.filesheader {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.filelist {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.fileimg {
+    width: 40px;
+    height: 40px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 0.6rem;
+    font-size: 0.8rem;
+}
+
+.filename {
+    flex: 1;
+    font-size: 0.9rem;
+}
+
+.filedownload {
+    font-size: 0.8rem;
+    color: #007bff;
+    cursor: pointer;
+}
+
+.filedownload:hover {
+    text-decoration: underline;
+}

@@ -1,0 +1,121 @@
+/* ====== 왼쪽 섹션: 채팅방 목록 ====== */
+.chatroomsection {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border-right: 1px solid #e0e0e0;
+}
+
+/* 채팅방 목록 영역 */
+.chatroomlist {
+    flex: 1;
+    overflow-y: auto; /* 채팅방이 많아지면 스크롤 */
+    padding: 0.5rem;
+}
+
+/* 채팅방 헤더 */
+.chatroomheader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #fafafa;
+    font-size: 0.9rem;
+}
+
+.chatroomheader button {
+    padding: 0.3rem 0.6rem;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.chatroomheader button:hover {
+    background-color: #0056b3;
+}
+
+/* 로고 영역 */
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    padding: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+
+/* 검색 영역 */
+.search {
+    display: flex;
+    margin-bottom: 0.5rem;
+}
+.search input[type="text"] {
+    flex: 1;
+    padding: 0.4rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.search button {
+    margin-left: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.search button:hover {
+    background-color: #218838;
+}
+
+/* 실제 채팅방 리스트 */
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* 개별 채팅방 항목 */
+.chatlist {
+    display: flex;
+    align-items: center;
+    padding: 0.6rem;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+.chatlist:hover {
+    background-color: #f0f0f0;
+}
+.chatroomimg {
+    width: 40px;
+    height: 40px;
+    background-color: #e0e0e0;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 0.6rem;
+    font-size: 0.8rem;
+}
+.chatroomdetail {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+.chatroomname {
+    font-weight: bold;
+    margin-bottom: 0.2rem;
+}
+.chatroomcontent {
+    font-size: 0.85rem;
+    color: #666;
+}
+.chatroomsendtime {
+    font-size: 0.75rem;
+    color: #999;
+    margin-left: 0.5rem;
+}
