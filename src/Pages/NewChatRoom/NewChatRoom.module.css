@@ -133,3 +133,25 @@ button.primary:hover {
     color: white;
     border-color: #007bff;
 }
+.modalBackground {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5); /* 반투명 배경 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modalContainer {
+    background-color: white;
+    width: 500px;
+    max-height: 90vh;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    overflow-y: auto;
+}
