@@ -83,7 +83,7 @@ const ChatRoom = ({ selectedRoom }) => {
                                     {room.name}
                                 </div>
                                 <div className={style.chatroomcontent}>
-                                    내용
+                                    {/*내용*/}
                                 </div>
                             </div>
                             <div className={style.chatroomsendtime}>1m</div>

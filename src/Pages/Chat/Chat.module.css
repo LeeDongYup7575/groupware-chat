@@ -1,102 +1,109 @@
-/* ====== 중앙 섹션: 채팅 메인 ====== */
 .chatsection {
     display: flex;
     flex-direction: column;
-    background-color: #fff;
+    background-color: #f2f3f5;
+    height: 100vh;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
 }
 
-/* 채팅방 헤더(상단) */
+/* ===== 채팅방 상단 ===== */
 .chatheader {
     display: flex;
+    justify-content: space-between;
     align-items: center;
     padding: 1rem;
+    background-color: #ffffff;
     border-bottom: 1px solid #e0e0e0;
 }
 
-.chatheaderimg {
-    width: 50px;
-    height: 50px;
-    background-color: #e0e0e0;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-right: 1rem;
-    font-size: 0.8rem;
-}
-
-.chatheadercontent {
-    display: flex;
-    flex-direction: column;
-}
-
 .chatheadercontentname {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.chatheader button {
+    background-color: #e74c3c;
+    padding: 0.4rem 1rem;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
     font-weight: bold;
 }
 
-.chatheadercontentstatus {
-    font-size: 0.85rem;
-    color: #28a745;
+.chatheader button:hover {
+    background-color: #c0392b;
 }
 
-/* 채팅 메시지 영역 */
+/* ===== 채팅 내용 영역 ===== */
 .chat {
     flex: 1;
-    padding: 1rem;
-    overflow-y: auto; /* 메시지가 많아지면 스크롤 */
-    background-color: #f9f9f9;
+    padding: 1.2rem;
+    overflow-y: auto;
+    background-color: #fafafa;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.6rem;
 }
 
-/* 예시: 받은 메시지, 보낸 메시지 레이아웃 */
+/* 말풍선 - 받은 메시지 */
 .chatsender {
     align-self: flex-start;
-    max-width: 70%;
-    background-color: #e9ecef;
-    padding: 0.5rem 1rem;
-    border-radius: 15px;
+    max-width: 65%;
+    background-color: #e0e0e0;
+    padding: 0.6rem 1rem;
+    border-radius: 1.2rem 1.2rem 1.2rem 0.4rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    font-size: 0.95rem;
 }
 
+/* 말풍선 - 내가 보낸 메시지 */
 .chatwriter {
     align-self: flex-end;
-    max-width: 70%;
-    background-color: #007bff;
-    color: #fff;
-    padding: 0.5rem 1rem;
-    border-radius: 15px;
+    max-width: 65%;
+    background-color: #3498db;
+    color: white;
+    padding: 0.6rem 1rem;
+    border-radius: 1.2rem 1.2rem 0.4rem 1.2rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    font-size: 0.95rem;
 }
 
-/* 채팅 입력 영역 */
+/* ===== 입력창 ===== */
 .chatinput {
     display: flex;
     align-items: center;
     padding: 0.8rem 1rem;
-    border-top: 1px solid #e0e0e0;
-    background-color: #fff;
-}
-
-.chatinput input[type="file"] {
-    margin-right: 0.5rem;
+    background-color: #ffffff;
+    border-top: 1px solid #ddd;
 }
 
 .chatinput input[type="text"] {
     flex: 1;
-    padding: 0.5rem;
+    padding: 0.6rem 1rem;
     border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-right: 0.5rem;
+    border-radius: 8px;
+    margin-right: 0.8rem;
+    font-size: 1rem;
+    outline: none;
+}
+
+.chatinput input[type="text"]:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 4px rgba(52, 152, 219, 0.3);
 }
 
 .chatinput button {
-    padding: 0.5rem 1rem;
+    padding: 0.6rem 1.2rem;
     background-color: #27ae60;
     color: #fff;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
 }
 
 .chatinput button:hover {
