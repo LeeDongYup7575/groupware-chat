@@ -4,16 +4,20 @@
     flex-direction: column;
     background-color: #fff;
     border-left: 1px solid #e0e0e0;
-    overflow-y: auto;
+    height: 100%;
+    min-height: 0;
 }
 
-/* 참여자 목록 */
 .chatmembers {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
     padding: 1rem;
     border-bottom: 1px solid #e0e0e0;
 }
 
 .chatmembersheader {
+    flex-shrink: 0;
     font-weight: bold;
     margin-bottom: 0.5rem;
 }

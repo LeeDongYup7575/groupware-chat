@@ -5,10 +5,10 @@ import style from "./ChatRoom.module.css";
 import axios from 'axios'
 
 // React 훅
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 
 // 라우팅 관련 훅 (지금은 사용 안 하고 있음)
-import { useLocation } from "react-router-dom";
+import {useLocation} from "react-router-dom";
 
 // API 요청용 커스텀 axios 클라이언트
 import ApiClient from "../../Api/ApiClient";
@@ -16,90 +16,104 @@ import ApiClient from "../../Api/ApiClient";
 // 채팅방 생성 모달 컴포넌트
 import NewChatRoom from "../NewChatRoom/NewChatRoom";
 
-// ChatRoom 컴포넌트 정의 - 채팅방 목록, 추가, 모달 등 처리
-const ChatRoom = ({ selectedRoom }) => {
-
-    // 📦 로그인한 사용자가 참여 중인 채팅방 목록을 저장하는 상태 변수
-    const [chatRoom, setChatRoom] = useState([]);
-
-    // 📦 모달 오픈 여부를 제어하는 상태 (true → 모달 열림)
+const ChatRoom = ({ selectedRoom, subscribeToRoom, setChatRoom, fetchChatRooms, chatRoom, messages }) => {
     const [showModal, setShowModal] = useState(false);
+    const [search, setSearch] = useState("");
 
-    // 📥 서버에서 채팅방 목록을 가져오는 함수
-    const fetchChatRooms = () => {
-        ApiClient.get("/chatroom").then(resp => {
-            // 응답 데이터를 상태에 저장
-            setChatRoom(resp.data);
-        });
-    };
-
-    // 🔁 컴포넌트가 처음 마운트될 때 채팅방 목록을 한 번 불러옴
     useEffect(() => {
-        fetchChatRooms();
-    }, []);
+        if (search === "") {
+            fetchChatRooms();
+        }
+    }, [search]);
 
-    // ✅ 채팅방 클릭 시 실행되는 함수 (해당 방의 정보를 상위 컴포넌트로 전달)
-    const handleChat = async (room) => {
+    const handleChat = (room) => {
         const chatData = {
             id: room.id,
             name: room.name,
         };
-        // 선택된 방 정보를 부모에게 넘겨줌 (상위에서 채팅창 열기)
         selectedRoom(chatData);
         console.log(room.id + " : " + room.name);
-    }
+    };
 
-    // 💡 렌더링 파트 시작
+    const handleSearch = () => {
+        if (search === "") {
+            return alert("검색할 내용을 입력해주세요.");
+        }
+        ApiClient.get("/chatroom/search", { params: { target: search } }).then(resp => {
+            console.log(resp.data);
+            setChatRoom(resp.data);
+        });
+    };
+
+    const getLastMessage = (roomId) => {
+        const roomMessages = messages[roomId];
+        if (!roomMessages || roomMessages.length === 0) {
+            return { lastContent: "아직 대화내용이 없습니다.", lastTime: "" };
+        }
+        const lastMessage = roomMessages[roomMessages.length - 1];
+        return { lastContent: lastMessage.content, lastTime: formatTime(lastMessage.sentAt) };
+    };
+
+    const formatTime = (timestamp) => {
+        if (!timestamp) return "";
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMinutes = Math.floor(diffMs / (1000 * 60));
+
+        if (diffMinutes < 1) return "방금 전";
+        if (diffMinutes < 60) return `${diffMinutes}분 전`;
+        const diffHours = Math.floor(diffMinutes / 60);
+        if (diffHours < 24) return `${diffHours}시간 전`;
+        return date.toLocaleDateString();
+    };
+
+    // ✅ return은 이 안에서 해야 해!
     return (
         <div className={style.chatroomsection}>
-            {/* 좌측 상단 로고 */}
-            <div className={style.logo}>
-                로고
-            </div>
+            <div className={style.logo}>로고</div>
 
-            {/* 채팅방 목록 헤더 - 알림 + 채팅방 추가 버튼 */}
             <div className={style.chatroomheader}>
-                새로운 알림 : 12
-                {/* ➕ 버튼 클릭 시 모달 열기 */}
+                참여중인 채팅방 목록
                 <button onClick={() => setShowModal(true)}>+</button>
             </div>
 
-            {/* 채팅방 목록 전체 영역 */}
             <div className={style.chatroomlist}>
-                {/* 🔍 채팅방/대상 검색바 (현재 기능 미구현) */}
                 <div className={style.search}>
-                    <input type="text" placeholder="대상 검색" />
-                    <button>찾기</button>
+                    <input type="text" placeholder="채팅방 이름 검색" onChange={(e) => setSearch(e.target.value)} />
+                    <button onClick={handleSearch}>찾기</button>
                 </div>
 
-                {/* 💬 채팅방 목록 출력 */}
-                {chatRoom.map((room, i) => (
-                    <div className={style.list} key={i}>
-                        {/* 각 채팅방 항목 클릭 시 채팅 시작 */}
-                        <div className={style.chatlist} onClick={() => handleChat(room)}>
-                            <div className={style.chatroomimg}> 이미지</div>
-                            <div className={style.chatroomdetail}>
-                                <div className={style.chatroomname}>
-                                    {room.name}
+                {Array.isArray(chatRoom) && chatRoom.map((room, i) => {
+                    const { lastContent, lastTime } = getLastMessage(room.id); // 🔥 여기서 뽑아
+                    return (
+                        <div className={style.list} key={i}>
+                            <div className={style.chatlist} onClick={() => handleChat(room)}>
+                                <div className={style.chatroomimg}>이미지</div>
+                                <div className={style.chatroomdetail}>
+                                    <div className={style.chatroomname}>
+                                        {room.name}
+                                    </div>
+                                    <div className={style.chatroomcontent}>
+                                        {lastContent} {/* 🔥 최근 메시지 내용 */}
+                                    </div>
                                 </div>
-                                <div className={style.chatroomcontent}>
-                                    {/*내용*/}
+                                <div className={style.chatroomsendtime}>
+                                    {lastTime} {/* 🔥 최근 메시지 시간 */}
                                 </div>
                             </div>
-                            <div className={style.chatroomsendtime}>1m</div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
-            {/* ➕ 채팅방 추가 모달 렌더링 조건부 표시 */}
             {showModal && (
                 <NewChatRoom
-                    // ❌ 모달 닫기 핸들러
                     onClose={() => setShowModal(false)}
-                    // ✅ 채팅방 생성 성공 시: 목록 새로고침 + 모달 닫기
-                    onSuccess={() => {
+                    onSuccess={(newRoom) => {
                         fetchChatRooms();
+                        selectedRoom({ id: newRoom.id, name: newRoom.name });
+                        subscribeToRoom(newRoom.id);
                         setShowModal(false);
                     }}
                 />
@@ -108,5 +122,4 @@ const ChatRoom = ({ selectedRoom }) => {
     );
 };
 
-// 컴포넌트 외부에서 사용할 수 있도록 export
 export default ChatRoom;

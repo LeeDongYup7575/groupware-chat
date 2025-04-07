@@ -19,6 +19,15 @@ const ChatMember = ({selectedChat}) => {
         }
         fetchUserList();
     }, [selectedChat]);
+    if (!selectedChat) {
+        return (
+            <div className={style.chatmembersection}>
+                <div className={style.chatmembersheader}>
+                    채팅방을 선택하세요
+                </div>
+            </div>
+        );
+    }
 
 
     return (
@@ -39,8 +48,7 @@ const ChatMember = ({selectedChat}) => {
                             <div className={style.chatmemberdesc}>
 
                             </div>
-                        </div>
-                    </div>
+                        </div></div>
                 ))}
 
             </div>

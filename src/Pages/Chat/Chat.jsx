@@ -8,7 +8,7 @@ import {useEffect, useRef, useState} from "react";
 import ApiClient from "../../Api/ApiClient";
 
 // Chat 컴포넌트 시작 - props로 선택된 채팅방, 실시간 메시지들, 소켓 클라이언트를 받음
-const Chat = ({selectedChat, messages = [], client}) => {
+const Chat = ({selectedChat, messages = [], client, fetchChatRooms, setSelectedChat, unSubscribeToRoom}) => {
     // ✅ JWT 토큰 해석 유틸 함수
     function parseJwt(token) {
         try {
@@ -84,6 +84,9 @@ const Chat = ({selectedChat, messages = [], client}) => {
         const id = selectedChat.id;
         ApiClient.post(`/membership/delete?roomid=${id}`).then(resp => {
             console.log(resp.data);
+            fetchChatRooms();
+            setSelectedChat(null);
+            unSubscribeToRoom(selectedChat.id);
         });
     };
 

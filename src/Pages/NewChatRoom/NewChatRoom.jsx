@@ -64,11 +64,15 @@ const NewChatRoom = ({onClose, onSuccess}) => {
                 "Content-Type": "application/json"
             }
         }).then(resp => {
+            const newRoom = {
+                id: resp.data.id,
+                name: resp.data.name
+            }
             // const roomId = resp.data.id;
             // const topic = `/topic/chat/${roomId}`;
             // client.subscribe(topic,)
             console.log(resp); // 응답 콘솔 확인
-            onSuccess();       // 채팅방 생성 후 목록 새로고침 등 처리
+            onSuccess(newRoom);       // 채팅방 생성 후 목록 새로고침 등 처리
             onClose();         // 모달 닫기
         });
     };

@@ -4,7 +4,7 @@ import axios from "axios";
 // ✅ axios 인스턴스 생성 - 기본 설정 정의
 const ApiClient = axios.create({
     // 모든 API 요청의 기본 URL 설정 (이 주소를 prefix로 붙임)
-    baseURL: "http://10.10.55.57", // 예: http://10.10.55.57/api/~~
+    baseURL: "http://172.20.10.3", // 예: http://10.10.55.57/api/~~
 });
 
 

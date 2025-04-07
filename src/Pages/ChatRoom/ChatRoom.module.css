@@ -4,12 +4,19 @@
     flex-direction: column;
     background-color: #fff;
     border-right: 1px solid #e0e0e0;
+    height: 100%; /* ✅ 부모 높이 채우기 */
+    min-height: 0; /* 🔥 필수 */
+}
+/* 로고, 헤더, 검색 부분: 고정 높이 */
+.logo, .chatroomheader, .search {
+    flex-shrink: 0;
 }
 
 /* 채팅방 목록 영역 */
 .chatroomlist {
     flex: 1;
-    overflow-y: auto; /* 채팅방이 많아지면 스크롤 */
+    overflow-y: auto;
+    min-height: 0; /* 🔥 필수 */
     padding: 0.5rem;
 }
 

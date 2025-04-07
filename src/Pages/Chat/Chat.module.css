@@ -2,10 +2,15 @@
     display: flex;
     flex-direction: column;
     background-color: #f2f3f5;
-    height: 100vh;
+    height: 100%;
     border-left: 1px solid #ddd;
     border-right: 1px solid #ddd;
+    min-height: 0;
 }
+.chatheader, .chatinput {
+    flex-shrink: 0;
+}
+
 
 /* ===== 채팅방 상단 ===== */
 .chatheader {
@@ -40,12 +45,13 @@
 /* ===== 채팅 내용 영역 ===== */
 .chat {
     flex: 1;
-    padding: 1.2rem;
     overflow-y: auto;
+    min-height: 0;
     background-color: #fafafa;
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
+    padding: 1.2rem;
 }
 
 /* 말풍선 - 받은 메시지 */
