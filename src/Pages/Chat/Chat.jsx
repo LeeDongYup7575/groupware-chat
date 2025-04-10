@@ -2,11 +2,11 @@
 import style from "./Chat.module.css";
 
 // 📦 React 훅과 axios 기반 API 클라이언트 불러오기
-import { useEffect, useRef, useState } from "react";
+import {useEffect, useRef, useState} from "react";
 import ApiClient from "../../Api/ApiClient";
 
 // ✨ Chat 컴포넌트 (채팅 화면 구성)
-const Chat = ({ selectedChat, messages = [], client, fetchChatRooms, setSelectedChat, unSubscribeToRoom }) => {
+const Chat = ({selectedChat, messages = [], client, fetchChatRooms, setSelectedChat, unSubscribeToRoom}) => {
 
     // ✅ JWT 토큰 파싱 유틸 함수
     function parseJwt(token) {
@@ -37,14 +37,10 @@ const Chat = ({ selectedChat, messages = [], client, fetchChatRooms, setSelected
     useEffect(() => {
         if (selectedChat) {
             ApiClient.get(`/chat/message/${selectedChat.id}`).then(resp => {
-                if (resp.data.size === 0) {
-                    // 데이터가 비었으면 기본 메시지
-                    const messages = Array.isArray(resp.data) ? resp.data : [{
-                        content: "아직 채팅내용이 없습니다",
-                        senderId: "system",
-                        senderName: "시스템"
-                    }];
-                    setPrevMessages(messages);
+                if (Array.isArray(resp.data) && resp.data.length > 0) {
+                    setPrevMessages(resp.data); // 메시지가 있을 때만 저장
+                } else {
+                    setPrevMessages([]); // 아무 메시지도 없으면 비워버려
                 }
             });
         }
@@ -53,7 +49,7 @@ const Chat = ({ selectedChat, messages = [], client, fetchChatRooms, setSelected
     // ✅ 새로운 메시지가 오면 스크롤을 자동으로 아래로 이동
     useEffect(() => {
         if (messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+            messagesEndRef.current.scrollIntoView({behavior: "smooth"});
         }
     }, [prevMessages, messages]);
 
@@ -108,18 +104,23 @@ const Chat = ({ selectedChat, messages = [], client, fetchChatRooms, setSelected
             {/* 채팅 메시지 목록 */}
             <div className={style.chat}>
                 {selectedChat ? (
-                    allMessages.map((msg, idx) => (
-                        <div
-                            key={idx}
-                            className={msg.senderId === userId ? style.chatwriter : style.chatsender}
-                        >
-                            <strong>{msg.senderName || "사용자"} : </strong> {msg.content}
-                        </div>
-                    ))
+                    allMessages.length > 0 ? (
+                        allMessages.map((msg, idx) => (
+                            <div
+                                key={idx}
+                                className={msg.senderId === userId ? style.chatwriter : style.chatsender}
+                            >
+                                <strong>{msg.senderName} : </strong> {msg.content}
+                            </div>
+                        ))
+                    ) : (
+                        <p>아직 채팅이 없습니다.</p>
+                    )
                 ) : (
                     <p>채팅방을 선택하면 메시지가 표시됩니다.</p>
                 )}
-                <div ref={messagesEndRef} /> {/* 스크롤 이동용 빈 div */}
+                <div ref={messagesEndRef}/>
+                {/* 스크롤 이동용 빈 div */}
             </div>
 
             {/* 채팅 입력창 */}

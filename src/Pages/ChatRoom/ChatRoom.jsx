@@ -108,7 +108,7 @@ const ChatRoom = ({selectedRoom, subscribeToRoom, setChatRoom, fetchChatRooms, c
                                         <span>{room.name}</span>
                                         {unreadCounts?.[room.id] > 0 && (
                                             <span className={style.unreadCount}>
-                                             {unreadCounts[room.id]}
+                                             {unreadCounts[room.id] > 99 ? "99+" : unreadCounts[room.id]}
                                              </span>
                                         )}
                                     </div>

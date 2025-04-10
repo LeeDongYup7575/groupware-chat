@@ -7,6 +7,16 @@ import ChatMember from "../ChatMember/ChatMember";  // 우측: 참여자 리스�
 import {Client} from '@stomp/stompjs';             // STOMP WebSocket 클라이언트
 import ApiClient from "../../Api/ApiClient";         // Axios 기반 API 클라이언트
 
+function parseJwt(token) {
+    try {
+        const base64Payload = token.split('.')[1];  // JWT에서 payload 부분 뽑기
+        const payload = atob(base64Payload);        // Base64 디코딩
+        return JSON.parse(payload);                 // JSON으로 파싱
+    } catch (e) {
+        return null;  // 에러나면 null
+    }
+}
+
 // ✨ MainPage 컴포넌트 시작
 const MainPage = () => {
     // ✅ 선택된 채팅방 정보
@@ -93,6 +103,15 @@ const MainPage = () => {
                 client.subscribe("/topic/chatroom/created", (message) => {
                     fetchChatRooms();  // 채팅방 리스트 새로고침
                 });
+
+                const token = localStorage.getItem("accessToken");
+                const userInfo = token ? parseJwt(token) : null;
+                const userId = userInfo.id;
+                client.subscribe(`/topic/chat/${userId}`, () => {
+                    fetchUnreadCounts();
+                })
+
+
             },
             onStompError: (frame) => {
                 alert("서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.");
