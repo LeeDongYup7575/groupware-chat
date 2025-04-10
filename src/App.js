@@ -1,7 +1,6 @@
 import './App.css';
 import { Route, Routes, useSearchParams } from "react-router-dom";
 import Main from "./Pages/Main/Main";
-import NewChatRoom from "./Pages/NewChatRoom/NewChatRoom";
 import { useEffect } from "react";
 
 function App() {
@@ -17,8 +16,7 @@ function App() {
     return (
         <div className="App">
             <Routes>
-                <Route path="/" element={<Main/>}></Route>
-                <Route path="/new-chat-room" element={<NewChatRoom />} />
+                <Route path="/" element={<Main/>}></Route> {/* ✅ 메인만 필요 */}
             </Routes>
         </div>
     );

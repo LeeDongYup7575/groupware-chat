@@ -1,167 +1,180 @@
-// ✅ 필요한 훅과 컴포넌트, 라이브러리 임포트
-import {useEffect, useRef, useState} from "react";
+// ✅ 필요한 라이브러리 및 컴포넌트 import
+import {use, useEffect, useRef, useState} from "react";
 import style from './Main.module.css';
-import ChatRoom from "../ChatRoom/ChatRoom";
-import Chat from "../Chat/Chat";
-import ChatMember from "../ChatMember/ChatMember";
-import {Client} from '@stomp/stompjs'; // STOMP 클라이언트
-import ApiClient from "../../Api/ApiClient"; // Axios 기반 API 클라이언트
+import ChatRoom from "../ChatRoom/ChatRoom";        // 좌측: 채팅방 리스트
+import Chat from "../Chat/Chat";                    // 중앙: 채팅창
+import ChatMember from "../ChatMember/ChatMember";  // 우측: 참여자 리스트
+import {Client} from '@stomp/stompjs';             // STOMP WebSocket 클라이언트
+import ApiClient from "../../Api/ApiClient";         // Axios 기반 API 클라이언트
 
+// ✨ MainPage 컴포넌트 시작
 const MainPage = () => {
-    // 💬 현재 선택된 채팅방 (ChatRoom에서 클릭 → Chat에 전달)
+    // ✅ 선택된 채팅방 정보
     const [selectedChat, setSelectedChat] = useState();
 
-    // 💌 채팅방 ID별 메시지를 저장하는 상태 객체
+    // ✅ 채팅방별 메시지 목록
     const [messages, setMessages] = useState({});
 
-    // 🧠 STOMP 클라이언트를 저장할 ref (재렌더링 방지) / 연결된 클라이언트는 client.current에 보관
-    const clientRef = useRef(null);
-
-    const selectedChatRef = useRef(null);
-
-
-    // ✅ 채팅방 클릭 시 호출되는 콜백 함수
-    const handleChatRoom = (chatData) => {
-        setSelectedChat(chatData); // 선택된 채팅방 정보 저장
-        selectedChatRef.current=chatData;
-    };
-    // 📦 로그인한 사용자가 참여 중인 채팅방 목록을 저장하는 상태 변수
+    // ✅ 로그인한 사용자가 참여 중인 채팅방 목록
     const [chatRoom, setChatRoom] = useState([]);
-    // 📥 서버에서 채팅방 목록을 가져오는 함수
-    const fetchChatRooms = () => {
-        ApiClient.get("/chatroom").then(resp => {
-            setChatRoom(resp.data);
+    const [unreadCounts, setUnreadCounts] = useState();
 
-            // 💡 채팅방 리스트 불러온 후 방마다 구독 다시 걸기
+
+    // ✅ STOMP 클라이언트와 참조들
+    const clientRef = useRef(null);                  // WebSocket 연결 인스턴스
+    const selectedChatRef = useRef(null);             // 선택된 채팅방 ref (구독 관리용)
+    const subscribeRooms = useRef(new Set());         // 이미 구독한 채팅방 Set
+
+    // ✅ 채팅방 클릭 핸들러
+    const handleChatRoom = (chatData) => {
+        setSelectedChat(chatData);                    // 선택한 채팅방 상태 저장
+        selectedChatRef.current = chatData;           // ref에도 저장 (WebSocket 알림 처리를 위해)
+        ApiClient.post("/unread/clear", {roomId: chatData.id})
+        fetchChatRooms();
+        fetchUnreadCounts();
+    };
+
+    const fetchUnreadCounts = async () => {
+        try {
+            const resp = await ApiClient.get("/unread/count");
+            setUnreadCounts(resp.data);
+        } catch (error) {
+            console.error("안읽은 메시지 불러오기 실패", error);
+            alert("안읽은 메시지를 불러오지 못했습니다. 다시시도해주세요!");
+        }
+    }
+    // ✅ 채팅방 목록 가져오기 (API 호출)
+    const fetchChatRooms = async () => {
+        try {
+            const resp = await ApiClient.get("/chatroom");
+            setChatRoom(resp.data || []);             // 혹시 null이면 빈 배열로
             if (clientRef.current && clientRef.current.connected) {
                 resp.data.forEach(room => {
-                    subscribeToRoom(room.id);
+                    subscribeToRoom(room.id);         // 각 방에 WebSocket 구독
                 });
             }
-        });
+            fetchUnreadCounts();
+        } catch (error) {
+            console.error("채팅방 목록 불러오기 실패", error);
+            setChatRoom([]);                          // 실패 시 빈 배열로 초기화
+        }
     };
 
-
-    // 🧠 STOMP WebSocket 연결 및 구독 처리
+    // ✅ 컴포넌트 마운트 시 WebSocket 연결
     useEffect(() => {
-        // ✅ 로컬스토리지에서 JWT 토큰 꺼내기
-        const token = localStorage.getItem("accessToken");
+        const token = localStorage.getItem("accessToken");   // JWT 토큰 가져오기
 
-        // ✅ STOMP 클라이언트 인스턴스 생성
         const client = new Client({
-            brokerURL: "ws://172.20.10.3:80/ws", // 👉 WebSocket 연결 주소 (서버에 따라 ws:// or wss://)
-            connectHeaders: {
-                Authorization: `Bearer ${token}` // 👉 JWT 토큰을 헤더에 포함시켜 서버 인증
-            },
-            reconnectDelay: 5000, // 👉 연결 끊기면 5초마다 재시도
-            // debug: (str) => console.log("[STOMP]", str), // 디버그 로그 출력
-
-            // ✅ 연결 성공 시 실행될 콜백
+            brokerURL: "ws://10.10.55.57:80/ws",             // WebSocket 서버 주소
+            connectHeaders: {Authorization: `Bearer ${token}`},  // JWT 토큰 추가
+            reconnectDelay: 5000,                            // 연결 끊기면 5초마다 재시도
             onConnect: () => {
                 console.log("✅ STOMP 연결 성공");
 
-                // 채팅방 목록 불러오기
+                // 🔹 채팅방 목록 가져와서 모두 구독
                 ApiClient("/chatroom").then((resp) => {
-                    // 채팅방마다 구독 설정
-                    resp.data.forEach((room) => {
-                        const topic = `/topic/chat/${room.id}`; // ex) /topic/chat/1
-
-                        // 해당 채팅방 메시지를 수신하면 처리
-                        client.subscribe(topic, (message) => {
-                            const msg = JSON.parse(message.body);
-
-                            // 채팅방별로 메시지 배열에 누적 저장
-                            setMessages((prev) => ({
-                                ...prev,
-                                [msg.chatroomId]: [...(prev[msg.chatroomId] || []), msg],
-                            }));
-                        });
+                    resp.data.forEach(room => {
+                        subscribeToRoom(room.id);
                     });
                 });
-                // ✅ [방 삭제 알림] 구독
-                client.subscribe("/topic/roomDeleted", (message) => {
-                    const payload = JSON.parse(message.body);   // { roomid: 5 }
-                    const deletedRoomId = payload.roomid;        // 🔥 제대로 id만 꺼내야 한다!!
-                    console.log("🔥 방 삭제 알림:", deletedRoomId);
 
-                    if (selectedChatRef.current?.id === deletedRoomId) {
+                // 🔹 채팅방 삭제 알림 수신
+                client.subscribe("/topic/roomDeleted", (message) => {
+                    const payload = JSON.parse(message.body);
+                    if (selectedChatRef.current?.id === payload.roomid) {
                         alert('이 채팅방은 삭제되었습니다.');
                         setSelectedChat(null);
-                        selectedChatRef.current = null;    // ✅ ref 초기화
+                        selectedChatRef.current = null;
                     }
-                    fetchChatRooms();                // 방 목록 새로고침
+                    fetchChatRooms();  // 채팅방 리스트 새로고침
                 });
 
+                // 🔹 새 채팅방 생성 알림 수신
                 client.subscribe("/topic/chatroom/created", (message) => {
-                    console.log("🔥 새 채팅방 생성 알림:", JSON.parse(message.body));
-                    fetchChatRooms();  // 🔄 목록 새로고침
+                    fetchChatRooms();  // 채팅방 리스트 새로고침
                 });
-
-
-                console.log("✅ 삭제 알림 구독 완료");
             },
-
-            // ❌ WebSocket 연결 중 에러 발생 시
             onStompError: (frame) => {
+                alert("서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.");
                 console.error("❌ STOMP 에러:", frame.headers['message']);
             }
         });
 
-        // 👉 실제 WebSocket 연결 시작
-        client.activate();
+        client.activate();             // WebSocket 연결 시작
+        clientRef.current = client;    // ref에 저장
 
-        // stomp 클라이언트를 ref에 저장 (Chat 컴포넌트에서 메시지 보낼 때 사용 가능)
-        clientRef.current = client;
-
-        // 🔚 컴포넌트 언마운트 시 연결 해제
         return () => {
-            if (client.connected) client.deactivate();
+            if (client.connected) client.deactivate();   // 컴포넌트 언마운트 시 연결 종료
         };
     }, []);
 
+    // ✅ 채팅방 WebSocket 구독 함수
     const subscribeToRoom = (roomId) => {
         if (clientRef.current && clientRef.current.connected) {
             const topic = `/topic/chat/${roomId}`;
+            if (subscribeRooms.current.has(roomId)) return; // 이미 구독했으면 패스
 
             clientRef.current.subscribe(topic, (message) => {
                 const msg = JSON.parse(message.body);
+
+                // 🔹 새로운 메시지를 messages 상태에 추가
                 setMessages((prev) => ({
                     ...prev,
                     [msg.chatroomId]: [...(prev[msg.chatroomId] || []), msg],
                 }));
+
+                // 🔹 해당 채팅방의 최근 메시지, 시간 갱신
+                setChatRoom((prevRooms) =>
+                    prevRooms.map((room) =>
+                        room.id === msg.chatroomId
+                            ? {...room, lastMessage: msg.content, lastMessageTime: msg.sentAt}
+                            : room
+                    )
+                );
             });
 
-            console.log(`✅ 방 ID ${roomId}에 구독 완료`);
-        } else {
-            console.warn("🚨 WebSocket 연결 안 되어 있음");
+            subscribeRooms.current.add(roomId);   // 구독 완료 표시
         }
     };
+
+    // ✅ 채팅방 WebSocket 구독 해제 함수
     const unSubscribeToRoom = (roomId) => {
         if (clientRef.current && clientRef.current.connected) {
-            const topic = `/topic/chat/${roomId}`;
-
-            clientRef.current.unsubscribe(topic);
-            console.log("구독해제 완료");
+            clientRef.current.unsubscribe(`/topic/chat/${roomId}`);
         }
-    }
+    };
 
-    // 🧱 UI 구성: 좌측 채팅방 목록 / 중앙 채팅창 / 우측 참여자 목록
+    // ✅ 화면 렌더링
     return (
         <div className={style.container}>
-            <ChatRoom selectedRoom={handleChatRoom} subscribeToRoom={subscribeToRoom}
-                      unSubScribeToRoom={unSubscribeToRoom} fetchChatRooms={fetchChatRooms} setChatRoom={setChatRoom}
-                      chatRoom={chatRoom} messages={messages}/>
+            {/* 좌측: 채팅방 목록 */}
+            <ChatRoom
+                selectedRoom={handleChatRoom}
+                subscribeToRoom={subscribeToRoom}
+                unSubScribeToRoom={unSubscribeToRoom}
+                fetchChatRooms={fetchChatRooms}
+                setChatRoom={setChatRoom}
+                chatRoom={chatRoom}
+                messages={messages}
+                unreadCounts={unreadCounts}
+            />
+
+            {/* 중앙: 채팅창 */}
             <Chat
-                selectedChat={selectedChat}                         // 현재 선택된 채팅방 정보
-                messages={messages[selectedChat?.id] || []}         // 선택된 방의 메시지 배열
+                selectedChat={selectedChat}
+                messages={messages[selectedChat?.id] || []}
                 client={clientRef.current}
                 fetchChatRooms={fetchChatRooms}
                 unSubscribeToRoom={unSubscribeToRoom}
-                setSelectedChat={setSelectedChat}// STOMP 클라이언트 인스턴스
+                setSelectedChat={setSelectedChat}
+
             />
+
+            {/* 우측: 채팅방 참여자 목록 */}
             <ChatMember selectedChat={selectedChat}/>
         </div>
     );
 };
 
+// ✨ 외부에서 사용할 수 있도록 export
 export default MainPage;
