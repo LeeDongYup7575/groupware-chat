@@ -6,7 +6,7 @@ import {useEffect, useRef, useState} from "react";
 import ApiClient from "../../Api/ApiClient";
 
 // ✨ Chat 컴포넌트 (채팅 화면 구성)
-const Chat = ({selectedChat, messages = [], client, fetchChatRooms, setSelectedChat, unSubscribeToRoom}) => {
+const Chat = ({selectedChat, messages = [], client, fetchChatRooms, setSelectedChat, unSubscribeToRoom,fetchUnreadCount}) => {
 
     // ✅ JWT 토큰 파싱 유틸 함수
     function parseJwt(token) {
@@ -70,6 +70,8 @@ const Chat = ({selectedChat, messages = [], client, fetchChatRooms, setSelectedC
         });
 
         setInput("");  // 입력창 비우기
+        fetchUnreadCount();
+        fetchChatRooms();
     };
 
     // ✅ 채팅방 나가기 함수
