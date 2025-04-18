@@ -2,57 +2,78 @@
 import style from "./ChatRoom.module.css";
 
 // 📦 React 훅, API 클라이언트 import
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import ApiClient from "../../Api/ApiClient";
 
 // ➕ 새 채팅방 생성 모달 컴포넌트 import
 import NewChatRoom from "../NewChatRoom/NewChatRoom";
 
 // ✨ ChatRoom 컴포넌트
-const ChatRoom = ({selectedRoom, subscribeToRoom, setChatRoom, fetchChatRooms, chatRoom, messages, unreadCounts}) => {
-    // ✅ 새 채팅방 모달 상태
+const ChatRoom = ({
+                      selectedRoom,
+                      subscribeToRoom,
+                      setChatRoom,
+                      fetchChatRooms,
+                      chatRoom,
+                      messages,
+                      unreadCounts
+                  }) => {
+    // ✅ 모달, 검색, 로딩 상태
     const [showModal, setShowModal] = useState(false);
-
-    // ✅ 검색어 상태
     const [search, setSearch] = useState("");
-
-    // ✅ 로딩 상태
     const [loading, setLoading] = useState(false);
 
-    // ✅ 채팅방 리스트 불러오기 (검색어가 비어있을 때)
+    // ✅ 실시간 검색 (디바운스) 적용
     useEffect(() => {
-        if (search === "") {
-            setLoading(true);    // 로딩 시작
-            fetchChatRooms().finally(() => setLoading(false));    // 로딩 끝
-        }
+        const timer = setTimeout(() => {
+            if (search.trim() === "") {
+                // 검색어 없으면 전체 채팅방 불러오기
+                setLoading(true);
+                fetchChatRooms().finally(() => setLoading(false));
+            } else {
+                // 검색어 있으면 검색 요청
+                setLoading(true);
+                ApiClient.get("/chatroom/search", { params: { target: search } })
+                    .then((resp) => {
+                        setChatRoom(resp.data);
+                    })
+                    .catch((error) => {
+                        console.error("❗ 검색 실패:", error);
+                        alert("검색 실패. 다시 시도해주세요.");
+                    })
+                    .finally(() => setLoading(false));
+            }
+        }, 300);
+
+        return () => clearTimeout(timer);
     }, [search]);
 
-    // ✅ 채팅방 클릭 시 (선택한 방 정보 넘겨줌)
-    const handleChat = (room) => {
-        const chatData = {id: room.id, name: room.name};
-        selectedRoom(chatData);
-    };
-
-    // ✅ 채팅방 검색
+    // ✅ 엔터 키 수동 검색 핸들러
     const handleSearch = () => {
-        if (search === "") {
-            return alert("검색할 내용을 입력해주세요.");
+        if (search.trim() === "") {
+            alert("검색할 내용을 입력해주세요.");
+            return;
         }
-        setLoading(true); // 로딩 시작
-        ApiClient.get("/chatroom/search", {params: {target: search}})
-            .then(resp => {
-                setChatRoom(resp.data);   // 검색 결과 저장
+
+        setLoading(true);
+        ApiClient.get("/chatroom/search", { params: { target: search } })
+            .then((resp) => {
+                setChatRoom(resp.data);
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error("❗ 검색 실패:", error);
                 alert("검색 실패. 다시 시도해주세요.");
             })
-            .finally(() => {
-                setLoading(false);  // 로딩 끝
-            });
+            .finally(() => setLoading(false));
     };
 
-    // ✅ 최근 메시지 시간을 보기 좋게 포맷팅
+    // ✅ 채팅방 클릭 시
+    const handleChat = (room) => {
+        const chatData = { id: room.id, name: room.name };
+        selectedRoom(chatData);
+    };
+
+    // ✅ 메시지 시간 포맷팅
     const formatTime = (timestamp) => {
         if (!timestamp) return "";
         const date = new Date(timestamp);
@@ -67,49 +88,54 @@ const ChatRoom = ({selectedRoom, subscribeToRoom, setChatRoom, fetchChatRooms, c
         return date.toLocaleDateString();
     };
 
-    // ✅ 화면 렌더링
+    // ✅ 렌더링
     return (
         <div className={style.chatroomsection}>
             {/* 🔷 상단 로고 */}
-            <div className={style.logo}>로고</div>
+            <div className={style.logo}>
+                <img src={`${process.env.PUBLIC_URL}/bigLogo.png`} alt="로고" />
+            </div>
 
-            {/* 🔷 채팅방 헤더 + 채팅방 추가 버튼 */}
+            {/* 🔷 채팅방 헤더 */}
             <div className={style.chatroomheader}>
                 참여중인 채팅방 목록
                 <button onClick={() => setShowModal(true)}>+</button>
             </div>
 
-            {/* 🔷 채팅방 목록 영역 */}
+            {/* 🔷 채팅방 목록 */}
             <div className={style.chatroomlist}>
-
-                {/* 🔹 채팅방 검색 영역 */}
+                {/* 🔹 검색영역 */}
                 <div className={style.search}>
                     <input
                         type="text"
                         placeholder="채팅방 이름 검색"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                handleSearch();
+                            }
+                        }}
                     />
                     <button onClick={handleSearch}>찾기</button>
                 </div>
 
-                {/* 🔹 채팅방 리스트 표시 */}
+                {/* 🔹 채팅방 리스트 */}
                 {loading ? (
-                    // ✅ 로딩 중일 때
                     <div>로딩 중입니다...</div>
                 ) : Array.isArray(chatRoom) && chatRoom.length > 0 ? (
-                    // ✅ 채팅방이 있을 때
                     chatRoom.map((room, i) => (
                         <div className={style.list} key={i}>
                             <div className={style.chatlist} onClick={() => handleChat(room)}>
-                                <div className={style.chatroomimg}>이미지</div>
                                 <div className={style.chatroomdetail}>
                                     <div className={style.chatroomname}>
                                         <span>{room.name}</span>
                                         {unreadCounts?.[room.id] > 0 && (
                                             <span className={style.unreadCount}>
-                                             {unreadCounts[room.id] > 99 ? "99+" : unreadCounts[room.id]}
-                                             </span>
+                        {unreadCounts[room.id] > 99
+                            ? "99+"
+                            : unreadCounts[room.id]}
+                      </span>
                                         )}
                                     </div>
                                     <div className={style.chatroomcontent}>
@@ -117,13 +143,12 @@ const ChatRoom = ({selectedRoom, subscribeToRoom, setChatRoom, fetchChatRooms, c
                                     </div>
                                 </div>
                                 <div className={style.chatroomsendtime}>
-                                    {room.lastMessageTime ? formatTime(room.lastMessageTime) : ''}
+                                    {room.lastMessageTime ? formatTime(room.lastMessageTime) : ""}
                                 </div>
                             </div>
                         </div>
                     ))
                 ) : (
-                    // ✅ 채팅방이 없을 때
                     <div>참여 중인 채팅방이 없습니다.</div>
                 )}
             </div>
@@ -131,12 +156,12 @@ const ChatRoom = ({selectedRoom, subscribeToRoom, setChatRoom, fetchChatRooms, c
             {/* 🔷 새 채팅방 생성 모달 */}
             {showModal && (
                 <NewChatRoom
-                    onClose={() => setShowModal(false)}  // 모달 닫기
+                    onClose={() => setShowModal(false)}
                     onSuccess={(newRoom) => {
-                        fetchChatRooms();                // 채팅방 목록 새로고침
-                        selectedRoom({id: newRoom.id, name: newRoom.name});  // 방 선택
-                        subscribeToRoom(newRoom.id);     // 새로 만든 방 구독
-                        setShowModal(false);             // 모달 닫기
+                        fetchChatRooms();
+                        selectedRoom({ id: newRoom.id, name: newRoom.name });
+                        subscribeToRoom(newRoom.id);
+                        setShowModal(false);
                     }}
                 />
             )}
@@ -144,5 +169,4 @@ const ChatRoom = ({selectedRoom, subscribeToRoom, setChatRoom, fetchChatRooms, c
     );
 };
 
-// ✨ 외부에서 사용할 수 있도록 export
 export default ChatRoom;

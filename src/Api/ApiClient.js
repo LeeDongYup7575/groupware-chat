@@ -4,7 +4,7 @@ import axios from "axios";
 // ✅ Axios 인스턴스 생성
 // 모든 API 요청에 기본 서버 URL을 자동으로 prefix로 붙여줌
 const ApiClient = axios.create({
-    baseURL: "http://10.10.55.57", // 서버 주소 (IP 또는 도메인)
+    baseURL: "http://groupware.techx.kro.kr:80", // 서버 주소 (IP 또는 도메인)
 });
 
 // ✅ 요청 인터셉터 설정

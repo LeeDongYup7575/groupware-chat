@@ -11,11 +11,18 @@ const Chat = ({selectedChat, messages = [], client, fetchChatRooms, setSelectedC
     // ✅ JWT 토큰 파싱 유틸 함수
     function parseJwt(token) {
         try {
-            const base64Payload = token.split('.')[1];
-            const payload = atob(base64Payload);
-            return JSON.parse(payload);
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+
+            // padding 추가
+            const padded = base64.padEnd(base64.length + (4 - base64.length % 4) % 4, '=');
+
+            const payload = atob(padded);
+            const parsed = JSON.parse(payload);
+            return parsed;
         } catch (e) {
-            return null;   // 잘못된 토큰이면 null 리턴
+            console.error("❗ JWT 파싱 실패:", e);
+            return null;
         }
     }
 
