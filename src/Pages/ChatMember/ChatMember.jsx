@@ -13,18 +13,22 @@ const ChatMember = ({ selectedChat }) => {
             .catch(err => console.error("❗ 참여자 목록 불러오기 실패:", err));
     }, [selectedChat]);
 
+    const isMobile = window.innerWidth <= 768;
+
     return (
         <>
-            {/* 참여자 토글 버튼 (모바일 하단 고정) */}
-            <button
-                className={style.toggleBtn}
-                onClick={() => setShowMembers(!showMembers)}
-            >
-                {showMembers ? "참여자 닫기" : "참여자 보기"}
-            </button>
+            {/* ✅ 모바일에서만 토글 버튼 표시 */}
+            {isMobile && (
+                <button
+                    className={style.toggleBtn}
+                    onClick={() => setShowMembers(!showMembers)}
+                >
+                    {showMembers ? "참여자 닫기" : "참여자 보기"}
+                </button>
+            )}
 
-            {/* 참여자 목록 패널 */}
-            {showMembers && (
+            {/* ✅ 데스크탑에서는 항상 보이고, 모바일에서는 버튼 눌렀을 때만 보임 */}
+            {(!isMobile || showMembers) && (
                 <div className={style.chatmembersection}>
                     <div className={style.chatmembers}>
                         <div className={style.chatmembersheader}>

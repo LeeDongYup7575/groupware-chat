@@ -3,16 +3,9 @@
     flex-direction: column;
     background-color: #fff;
     padding: 1rem;
-    border-radius: 12px 12px 0 0;
-    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.15);
-    position: fixed;
-    bottom: 60px;
-    left: 0;
-    right: 0;
-    width: 90%;
-    max-height: 40vh;
-    margin: 0 auto;
-    z-index: 100;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    height: 80%;
     overflow-y: auto;
 }
 
@@ -77,6 +70,7 @@
     color: #111;
 }
 
+/* ✅ 모바일에서만 토글 버튼 보여줌 */
 .toggleBtn {
     display: none;
 }
@@ -94,5 +88,18 @@
         font-size: 1rem;
         font-weight: bold;
         cursor: pointer;
+    }
+
+    .chatmembersection {
+        position: fixed;
+        bottom: 60px;
+        left: 0;
+        right: 0;
+        width: 90%;
+        max-height: 50vh;
+        margin: 0 auto;
+        border-radius: 12px 12px 0 0;
+        z-index: 100;
+        box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.15);
     }
 }
