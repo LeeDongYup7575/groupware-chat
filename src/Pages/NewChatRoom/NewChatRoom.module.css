@@ -1,115 +1,120 @@
-.container {
-    width: 480px;
-    margin: 50px auto;
-    padding: 1.5rem;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    transition: transform 0.2s ease;
-}
-.container:hover {
-    transform: translateY(-3px);
-}
+/* NewChatRoom.module.css */
 
-.header {
-    margin-bottom: 1rem;
-    padding-bottom: 0.8rem;
-    border-bottom: 1px solid #e0e0e0;
-    color: #333;
-    font-size: 1.2rem;
-    font-weight: 600;
-}
-
-.chatRoomName {
-    margin-top: 1rem;
-}
-
-.chatRoomName input,
-.searchInput input {
-    width: 100%;
-    padding: 0.6rem 0.8rem;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    outline: none;
-    transition: border-color 0.2s ease;
-}
-.chatRoomName input:focus,
-.searchInput input:focus {
-    border-color: #6366f1;
-}
-
-.searchInput button {
-    margin-left: 10px;
-    padding: 0.6rem 1rem;
-    font-size: 1rem;
-    border: none;
-    border-radius: 8px;
-    background-color: #6366f1;
-    color: #fff;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-.searchInput button:hover {
-    background-color: #4f46e5;
-}
-
-/* 참여자 선택 영역 */
-.body {
-    padding: 1rem;
-    font-size: 1rem;
-    color: #555;
-    line-height: 1.6;
-    min-height: 120px;
-    max-height: 300px;
-    overflow-y: auto;
-    border: 2px dashed #ddd;
-    border-radius: 8px;
-    margin-bottom: 1.2rem;
-    background-color: #fafafa;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.body button {
-    padding: 0.5rem 0.8rem;
-    font-size: 1rem;
-    border: none;
-    border-radius: 8px;
-    background-color: #f1f1f1;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    text-align: left;
-}
-.body button:hover {
-    background-color: #e5e5e5;
-}
-.body button.selected {
-    background-color: #6366f1;
-    color: #fff;
-}
-
+/* 모달 배경 */
 .modalBackground {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.4);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 9999;
 }
 
+/* 모달 본체 */
 .modalContainer {
     background-color: #fff;
-    width: 500px;
+    width: 480px;
     max-height: 90vh;
     padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.modalContainer h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: #333;
+}
+
+/* 채팅방 이름 입력창 */
+.chatRoomName input {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9fafb;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.chatRoomName input:focus {
+    border-color: #6366f1;
+}
+
+/* 참여자 리스트 버튼 영역 */
+.body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.8rem;
+    border: 2px dashed #ddd;
+    background-color: #fafafa;
+    border-radius: 8px;
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+/* 참여자 개별 버튼 */
+.body button {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.95rem;
+    border: none;
+    border-radius: 8px;
+    background-color: #f1f1f1;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.2s;
+}
+.body button:hover {
+    background-color: #e2e2e2;
+}
+.body button.selected {
+    background-color: #6366f1;
+    color: white;
+}
+
+/* 생성 버튼 */
+.modalContainer > button {
+    align-self: flex-end;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    background-color: #6366f1;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.modalContainer > button:hover {
+    background-color: #4f46e5;
+}
+
+/* 모바일 대응 */
+@media (max-width: 768px) {
+    .modalContainer {
+        width: 90%;
+        padding: 1rem;
+    }
+    .modalContainer h2 {
+        font-size: 1.2rem;
+    }
+    .chatRoomName input {
+        font-size: 0.9rem;
+    }
+    .body button {
+        font-size: 0.9rem;
+    }
+    .modalContainer > button {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+    }
 }

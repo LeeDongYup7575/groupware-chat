@@ -1,14 +1,15 @@
+/* Chat.module.css */
+
 .chatsection {
     display: flex;
     flex-direction: column;
     background-color: #fff;
     height: 100%;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     overflow: hidden;
 }
 
-/* 상단 헤더 */
+/* 채팅방 상단 헤더 */
 .chatheader {
     display: flex;
     justify-content: space-between;
@@ -17,21 +18,18 @@
     background-color: #f9f9f9;
     border-bottom: 1px solid #e0e0e0;
 }
-
 .chatheadercontentname {
     font-size: 1.1rem;
     font-weight: 700;
     color: #333;
 }
-
-/* 상단 헤더의 버튼 (나가기) */
 .chatheader button {
     padding: 0.4rem 1rem;
     border: none;
     border-radius: 8px;
     background-color: #6366f1;
     color: #fff;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s;
@@ -40,69 +38,67 @@
     background-color: #4f46e5;
 }
 
-/* 채팅 메시지 영역 */
+/* 채팅 메시지 목록 */
 .chat {
     flex: 1;
     overflow-y: auto;
     padding: 1rem;
-    background-color: #fcfcfc;
+    background-color: #f9f9f9;
     display: flex;
     flex-direction: column;
     gap: 0.8rem;
 }
 
-/* 수신 메시지 (상대방) */
+.chatsender,
+.chatwriter {
+    max-width: 70%;
+    padding: 0.8rem 1rem;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    word-wrap: break-word;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+/* 상대방 메시지 */
 .chatsender {
     align-self: flex-start;
-    max-width: 70%;
     background-color: #f3f4f6;
-    padding: 0.8rem 1rem;
-    border-radius: 8px 8px 8px 2px;
-    font-size: 0.95rem;
+    border-radius: 12px 12px 12px 4px;
     color: #333;
-    word-wrap: break-word;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
-/* 송신 메시지 (내 메시지) */
+/* 내 메시지 */
 .chatwriter {
     align-self: flex-end;
-    max-width: 70%;
     background-color: #e0f2fe;
-    padding: 0.8rem 1rem;
-    border-radius: 8px 8px 2px 8px;
-    font-size: 0.95rem;
+    border-radius: 12px 12px 4px 12px;
     color: #333;
-    word-wrap: break-word;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
-/* 채팅 입력창 */
+/* 메시지 입력창 */
 .chatinput {
     display: flex;
     align-items: center;
-    gap: 0.8rem;
     padding: 0.8rem;
-    background-color: #ffffff;
     border-top: 1px solid #e0e0e0;
+    background-color: #fff;
+    gap: 0.8rem;
 }
-
 .chatinput input[type="text"] {
     flex: 1;
     padding: 0.7rem 1rem;
+    font-size: 1rem;
     border: 1px solid #dcdfe3;
     border-radius: 8px;
-    font-size: 1rem;
     background-color: #f9fafb;
     outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
 }
 .chatinput input[type="text"]:focus {
-    border-color: #b0b0b0;
-    box-shadow: 0 0 0 3px rgba(160, 160, 160, 0.1);
+    border-color: #a0a0a0;
+    box-shadow: 0 0 0 2px rgba(160, 160, 160, 0.15);
 }
 
-/* 메시지 보내기 버튼 */
 .chatinput button {
     padding: 0.7rem 1.2rem;
     border: none;
@@ -116,4 +112,32 @@
 }
 .chatinput button:hover {
     background-color: #4f46e5;
+}
+
+/* 📱 모바일 대응 */
+@media (max-width: 768px) {
+    .chatheadercontentname {
+        font-size: 1rem;
+    }
+
+    .chat {
+        padding: 0.5rem;
+        gap: 0.6rem;
+    }
+
+    .chatsender,
+    .chatwriter {
+        font-size: 0.85rem;
+        padding: 0.6rem 0.9rem;
+    }
+
+    .chatinput input[type="text"] {
+        font-size: 0.9rem;
+        padding: 0.6rem 0.8rem;
+    }
+
+    .chatinput button {
+        font-size: 0.9rem;
+        padding: 0.6rem 1rem;
+    }
 }
