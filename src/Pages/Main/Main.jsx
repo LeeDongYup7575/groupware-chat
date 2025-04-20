@@ -70,7 +70,7 @@ const MainPage = () => {
     useEffect(() => {
         const token = localStorage.getItem("accessToken");
         const client = new Client({
-            brokerURL: "ws://groupware.techx.kro.kr/ws",
+            brokerURL: "ws://172.20.10.3/ws",
             connectHeaders: { Authorization: `Bearer ${token}` },
             reconnectDelay: 5000,
             onConnect: () => {
